@@ -1,0 +1,23 @@
+services:
+  mariadb:
+    image: quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+    container_name: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_DATABASE: demo
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  local-ai:
+      image: localai/localai:master-ffmpeg-core
+      container_name: local-ai
+      command: bert-cpp phi-3.5-mini-instruct
+      ports:
+        - "8080:8080"
+      environment:
+        - DEBUG=true
+      volumes:
+        - ./models:/build/models:cached
