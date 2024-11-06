@@ -1,5 +1,11 @@
 # Demo: RAG with MariaDB
 
+This demo demonstrates how to build a Retrieval-Augmented Generation (RAG) application
+using MariaDB and LocalAI.
+
+**Note:** This demo uses a _preview version_ of MariaDB which includes SQL syntax that
+will likely change in the next GA (stable) version.
+
 ## Prerequisites
 - Docker
 
