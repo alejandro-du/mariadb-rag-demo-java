@@ -42,25 +42,26 @@ public class RagDemo {
 				.body(requestBody)
 				.asString().getBody();
 
-		var connection = new Sql2o(
-				"jdbc:mariadb://127.0.0.1:3306/demo", "root", "password").open();
+		try (var connection = new Sql2o(
+				"jdbc:mariadb://127.0.0.1:3306/demo", "root", "password").open()) {
 
-		var table = connection.createQuery("""
-				SELECT id, CONCAT(
-					"Product: ", title, ". Stars: ", stars, ". Price: $", price, ". Category: ", category_name,
-					". Best seller: ", CASE WHEN is_best_seller THEN "Yes" ELSE "No" END
-				) AS description
-				FROM products
-				WHERE embedding IS NOT NULL
-				ORDER BY VEC_Distance(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
-				LIMIT 10
-				""")
-				.addParameter("response", response)
-				.executeAndFetchTable();
+			var table = connection.createQuery("""
+					SELECT id, CONCAT(
+						"Product: ", title, ". Stars: ", stars, ". Price: $", price, ". Category: ", category_name,
+						". Best seller: ", CASE WHEN is_best_seller THEN "Yes" ELSE "No" END
+					) AS description
+					FROM products
+					WHERE embedding IS NOT NULL
+					ORDER BY VEC_Distance(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
+					LIMIT 10
+					""")
+					.addParameter("response", response)
+					.executeAndFetchTable();
 
-		return table.rows().stream()
-				.map(row -> row.getString("description"))
-				.collect(Collectors.joining("\n\n"));
+			return table.rows().stream()
+					.map(row -> row.getString("description"))
+					.collect(Collectors.joining("\n\n"));
+		}
 	}
 
 	private static String buildPrompt(String input, Object context) {

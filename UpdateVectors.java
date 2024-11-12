@@ -14,43 +14,44 @@ import org.sql2o.data.*;
 public class UpdateVectors {
 
 	public static void main(String[] args) throws Exception {
-		var connection = new Sql2o(
-				"jdbc:mariadb://127.0.0.1:3306/demo", "root", "password").open();
+		try (var connection = new Sql2o(
+				"jdbc:mariadb://127.0.0.1:3306/demo", "root", "password").open()) {
 
-		var table = connection.createQuery("""
-				SELECT id, CONCAT(
-					"Product: ", title, ". Stars: ", stars, ". Price: $", price, ". Category: ", category_name,
-					". Best seller: ", CASE WHEN is_best_seller THEN "Yes" ELSE "No" END
-				) AS description
-				FROM products
-				WHERE embedding IS NULL
-				""").executeAndFetchTableLazy();
+			var table = connection.createQuery("""
+					SELECT id, CONCAT(
+						"Product: ", title, ". Stars: ", stars, ". Price: $", price, ". Category: ", category_name,
+						". Best seller: ", CASE WHEN is_best_seller THEN "Yes" ELSE "No" END
+					) AS description
+					FROM products
+					WHERE embedding IS NULL
+					""").executeAndFetchTableLazy();
 
-		for (Row row : table.rows()) {
-			var id = row.getString("id");
-			var description = row.getString("description");
+			for (Row row : table.rows()) {
+				var id = row.getString("id");
+				var description = row.getString("description");
 
-			var requestBody = """
-					{ "model": "bert-cpp-minilm-v6", "input": %s }
-					""".formatted(new ObjectMapper().writeValueAsString(description));
+				var requestBody = """
+						{ "model": "bert-cpp-minilm-v6", "input": %s }
+						""".formatted(new ObjectMapper().writeValueAsString(description));
 
-			var response = Unirest.post("http://localhost:8080/v1/embeddings")
-					.header("Content-Type", "application/json")
-					.body(requestBody)
-					.asString().getBody();
+				var response = Unirest.post("http://localhost:8080/v1/embeddings")
+						.header("Content-Type", "application/json")
+						.body(requestBody)
+						.asString().getBody();
 
-			connection.createQuery("""
-					UPDATE products
-					SET embedding = VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding'))
-					WHERE id = :id
-					""")
-					.addParameter("response", response)
-					.addParameter("id", id)
-					.executeUpdate();
+				connection.createQuery("""
+						UPDATE products
+						SET embedding = VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding'))
+						WHERE id = :id
+						""")
+						.addParameter("response", response)
+						.addParameter("id", id)
+						.executeUpdate();
 
-			System.out.println("Updated embedding for product ID: " + id);
+				System.out.println("Updated embedding for product ID: " + id);
+			}
 		}
 
-		connection.close();
+		System.out.println("All embeddings updated!");
 	}
 }
