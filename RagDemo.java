@@ -6,6 +6,7 @@
 //DEPS org.sql2o:sql2o:1.8.0
 //DEPS org.slf4j:slf4j-simple:2.0.16
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kong.unirest.Unirest;
 import org.sql2o.*;
@@ -17,18 +18,19 @@ public class RagDemo {
 		Unirest.config().socketTimeout(5 * 60 * 1000);
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws JsonProcessingException {
 		var input = System.console().readLine("I'm looking for: ");
 
 		System.out.println("Finding closest products...");
 		var context = getContext(input);
+
 		System.out.println("Generating response...");
 		var prompt = buildPrompt(input, context);
 		var response = getResponse(prompt);
 		System.out.println(response);
 	}
 
-	private static String getContext(String input) throws Exception {
+	private static String getContext(String input) throws JsonProcessingException {
 		var requestBody = """
 				{
 					"model": "bert-cpp-minilm-v6",
@@ -71,7 +73,7 @@ public class RagDemo {
 				""".formatted(input, context);
 	}
 
-	private static String getResponse(String prompt) throws Exception {
+	private static String getResponse(String prompt) throws JsonProcessingException {
 		var requestBody = """
 				{
 					"model": "phi-2-chat",

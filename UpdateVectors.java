@@ -31,7 +31,10 @@ public class UpdateVectors {
 				var description = row.getString("description");
 
 				var requestBody = """
-						{ "model": "bert-cpp-minilm-v6", "input": %s }
+						{
+							"model": "bert-cpp-minilm-v6",
+							"input": %s
+						}
 						""".formatted(new ObjectMapper().writeValueAsString(description));
 
 				var response = Unirest.post("http://localhost:8080/v1/embeddings")
