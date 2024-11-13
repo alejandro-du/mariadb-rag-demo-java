@@ -8,35 +8,29 @@ will likely change in the next GA (stable) version.
 
 ## Prerequisites
 
-You only need [Docker](https://www.docker.com/) installed and running on your computer.
+You only need [Docker](https://www.docker.com/) installed and running on your computer to run this demo.
 
 ## Setup
 
-Start the LocalAI and MariaDB services:
+Start the LocalAI and MariaDB services (see the **docker-compose.yml** file):
 
 ```shell
 docker compose up -d
 ```
 
-Check the model downloads progress:
-
-```
-docker logs -f local-ai
-```
-
 Download the dataset:
 https://www.kaggle.com/datasets/asaniczka/amazon-canada-products-2023-2-1m-products
 
-Create a _slice_ of the dataset. For example 50k products:
+Move to the directory where you downloaded the dataset and create a _slice_ of it. For example 50k products:
 
 ```shell
-head -n 50001 ~/Datasets/amz_ca_total_products_data_processed.csv > ~/Datasets/slice.csv
+head -n 50001 ~/Downloads/amz_ca_total_products_data_processed.csv > ~/Downloads/slice.csv
 ```
 
-Copy the file to the Docker container that is running MariaDB:
+Copy the file to the MariaDB Docker container:
 
 ```shell
-docker cp ~/Datasets/slice.csv mariadb:/slice.csv
+docker cp ~/Downloads/slice.csv mariadb:/slice.csv
 ```
 
 Connect to the MariaDB server:
@@ -81,9 +75,18 @@ Calculate the vector embeddings:
 ./UpdateVectors.java
 ```
 
+Be patient. This might take a lot of time depending on your hardware and the size of the slice that you took.
+
 ## Run the demo
 
+Before you run the demo double-check the models downloaded successfully:
+
+```shell
+docker logs -f local-ai
+```
+
 Start the demo:
+
 ```shell
 ./RagDemo.java
 ```
