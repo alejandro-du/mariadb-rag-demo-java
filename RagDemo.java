@@ -14,18 +14,14 @@ import java.util.stream.Collectors;
 public class RagDemo {
 
 	static {
-		Unirest.config().socketTimeout(120000).connectTimeout(120000);
+		Unirest.config().socketTimeout(5 * 60 * 1000);
 	}
 
 	public static void main(String[] args) throws Exception {
 		var input = System.console().readLine("I'm looking for: ");
 
-		System.out.println("\nFinding closest products...");
+		System.out.println("Finding closest products...");
 		var context = getContext(input);
-		System.out.println("-------------------------------------------------------------");
-		System.out.println(context);
-		System.out.println("-------------------------------------------------------------\n");
-
 		System.out.println("Generating response...");
 		var prompt = buildPrompt(input, context);
 		var response = getResponse(prompt);
@@ -34,10 +30,13 @@ public class RagDemo {
 
 	private static String getContext(String input) throws Exception {
 		var requestBody = """
-				{ "model": "bert-cpp-minilm-v6", "input": %s }
+				{
+					"model": "bert-cpp-minilm-v6",
+					"input": %s
+				}
 				""".formatted(new ObjectMapper().writeValueAsString(input));
 
-		var response = Unirest.post("http://localhost:8080/v1/embeddings")
+		var response = Unirest.post("http://127.0.0.1:8080/v1/embeddings")
 				.header("Content-Type", "application/json")
 				.body(requestBody)
 				.asString().getBody();
@@ -53,7 +52,7 @@ public class RagDemo {
 					FROM products
 					WHERE embedding IS NOT NULL
 					ORDER BY VEC_Distance(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
-					LIMIT 10
+					LIMIT 7
 					""")
 					.addParameter("response", response)
 					.executeAndFetchTable();
@@ -66,9 +65,7 @@ public class RagDemo {
 
 	private static String buildPrompt(String input, Object context) {
 		return """
-				You are a sales assistant. I'm looking for %s.
-
-				Using the following information, recommend me a product in one single paragraph:
+				I'm looking for %s. Using the following information, recommend me a product in one single paragraph:
 
 				%s
 				""".formatted(input, context);
@@ -76,10 +73,18 @@ public class RagDemo {
 
 	private static String getResponse(String prompt) throws Exception {
 		var requestBody = """
-				{ "model": "phi-2", "messages": [{"role": "user", "content": %s, "temperature": 0.4}] }
+				{
+					"model": "phi-2-chat",
+					"messages": [
+						{"role": "system", "content": "You are a sales assistant."},
+						{"role": "user", "content": %s}
+					],
+					"temperature": 0.2,
+					"max_tokens": 100
+				}
 				""".formatted(new ObjectMapper().writeValueAsString(prompt));
 
-		var response = Unirest.post("http://localhost:8080/v1/chat/completions")
+		var response = Unirest.post("http://127.0.0.1:8080/v1/chat/completions")
 				.header("Content-Type", "application/json")
 				.body(requestBody)
 				.asString().getBody();
