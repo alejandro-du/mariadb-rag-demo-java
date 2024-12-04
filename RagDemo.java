@@ -49,7 +49,7 @@ public class RagDemo {
 			var table = connection.createQuery("""
 					SELECT id, CONCAT(
 						"Product: ", title, ". Stars: ", stars, ". Price: $", price, ". Category: ", category_name,
-						". Best seller: ", CASE WHEN is_best_seller THEN "Yes" ELSE "No" END
+						". Best seller: ", IF(is_best_seller, "Yes", "No")
 					) AS description
 					FROM products
 					WHERE embedding IS NOT NULL

@@ -7,7 +7,7 @@ services:
       MARIADB_DATABASE: demo
     volumes:
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
-      - ./data:/var/lib/mysql
+      - ./mariadb-data:/var/lib/mysql
     ports:
       - "3306:3306"
 
