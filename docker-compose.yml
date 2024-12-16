@@ -1,6 +1,6 @@
 services:
   mariadb:
-    image: quay.io/mariadb-foundation/mariadb-devel:11.6-vector-preview
+    image: mariadb:11.7-rc
     container_name: mariadb
     environment:
       MARIADB_ROOT_PASSWORD: password

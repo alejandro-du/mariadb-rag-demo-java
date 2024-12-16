@@ -53,7 +53,7 @@ public class RagDemo {
 					) AS description
 					FROM products
 					WHERE embedding IS NOT NULL
-					ORDER BY VEC_Distance(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
+					ORDER BY VEC_DISTANCE_EUCLIDEAN(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
 					LIMIT 7
 					""")
 					.addParameter("response", response)
