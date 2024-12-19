@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS products (
     category_name VARCHAR(100),
     is_best_seller BOOLEAN,
     bought_in_last_month INT,
-	embedding VECTOR(768)
+	embedding VECTOR(2048)
 );

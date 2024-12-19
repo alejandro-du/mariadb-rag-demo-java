@@ -33,7 +33,7 @@ public class RagDemo {
 	private static String getContext(String input) throws JsonProcessingException {
 		var requestBody = """
 				{
-					"model": "bert-cpp-minilm-v6",
+					"model": "bert-embeddings",
 					"input": %s
 				}
 				""".formatted(new ObjectMapper().writeValueAsString(input));

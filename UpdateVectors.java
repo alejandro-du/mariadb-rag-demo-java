@@ -32,7 +32,7 @@ public class UpdateVectors {
 
 				var requestBody = """
 						{
-							"model": "bert-cpp-minilm-v6",
+							"model": "bert-embeddings",
 							"input": %s
 						}
 						""".formatted(new ObjectMapper().writeValueAsString(description));
