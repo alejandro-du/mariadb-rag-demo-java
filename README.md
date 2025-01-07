@@ -3,8 +3,8 @@
 This demo shows how to build a Retrieval-Augmented Generation (RAG) application
 using [MariaDB](https://mariadb.com/), [LocalAI](https://localai.io/), and [Java](https://en.wikipedia.org/wiki/Java_(programming_language)).
 
-**Note:** This demo uses a _preview version_ of MariaDB which includes SQL syntax that
-will likely change in the next GA (stable) version.
+**Note:** This demo uses an _RC version_ of MariaDB which includes SQL syntax that
+might change in the next GA (stable) version.
 
 ## Prerequisites
 
