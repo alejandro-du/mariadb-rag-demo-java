@@ -1,6 +1,6 @@
 # Demo: RAG with MariaDB (Java)
 
-This demo demonstrates how to build a Retrieval-Augmented Generation (RAG) application
+This demo shows how to build a Retrieval-Augmented Generation (RAG) application
 using [MariaDB](https://mariadb.com/), [LocalAI](https://localai.io/), and [Java](https://en.wikipedia.org/wiki/Java_(programming_language)).
 
 **Note:** This demo uses a _preview version_ of MariaDB which includes SQL syntax that
