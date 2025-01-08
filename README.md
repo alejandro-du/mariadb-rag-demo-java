@@ -63,6 +63,15 @@ IGNORE 1 LINES
 );
 ```
 
+Since the dataset contains repeated products, remove duplicates as follows:
+
+```sql
+DELETE p1
+FROM products p1
+JOIN products p2 ON p1.title = p2.title
+WHERE p1.id > p2.id;
+```
+
 Exit the MariaDB client:
 
 ```shell
