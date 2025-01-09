@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class RagDemo {
 
 	static {
-		Unirest.config().socketTimeout(5 * 60 * 1000);
+		Unirest.config().socketTimeout(10 * 60 * 1000);
 	}
 
 	public static void main(String[] args) throws JsonProcessingException {
@@ -26,6 +26,8 @@ public class RagDemo {
 
 		System.out.println("Generating response...");
 		var prompt = buildPrompt(input, context);
+		System.out.println(prompt);
+		//if(true) return;
 		var response = getResponse(prompt);
 		System.out.println(response);
 	}
@@ -48,26 +50,35 @@ public class RagDemo {
 
 			var table = connection.createQuery("""
 					SELECT id, CONCAT(
-						"Product: ", title, ". Stars: ", stars, ". Price: $", price, ". Category: ", category_name,
-						". Best seller: ", IF(is_best_seller, "Yes", "No")
-					) AS description
+						ROW_NUMBER() OVER (), ". ",
+						product_name, " (",
+						"Category: ", category_name, ", ", root_category_name,
+						" - Price: €", initial_price,
+						" - Rating: ", rating,
+						")."
+					) AS product
 					FROM products
 					WHERE embedding IS NOT NULL
-					ORDER BY VEC_DISTANCE_EUCLIDEAN(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
-					LIMIT 7
+					ORDER BY VEC_DISTANCE_COSINE(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
+					LIMIT 5
 					""")
 					.addParameter("response", response)
 					.executeAndFetchTable();
 
 			return table.rows().stream()
-					.map(row -> row.getString("description"))
+					.map(row -> row.getString("product"))
 					.collect(Collectors.joining("\n\n"));
 		}
 	}
 
 	private static String buildPrompt(String input, Object context) {
 		return """
-				I'm looking for %s. Using the following information, recommend me a product in one single paragraph:
+				You are an expert sales assistant. Help me choose the best product for my needs.
+				Recommend only one product from the list below and explain why it’s the best choice in one short paragraph.
+
+				I'm looking for %s.
+
+				Available products:
 
 				%s
 				""".formatted(input, context);
@@ -78,11 +89,10 @@ public class RagDemo {
 				{
 					"model": "phi-2-chat",
 					"messages": [
-						{"role": "system", "content": "You are a sales assistant."},
 						{"role": "user", "content": %s}
 					],
-					"temperature": 0.2,
-					"max_tokens": 100
+					"temperature": 0.3,
+					"max_tokens": 150
 				}
 				""".formatted(new ObjectMapper().writeValueAsString(prompt));
 

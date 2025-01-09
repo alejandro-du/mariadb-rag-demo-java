@@ -7,6 +7,7 @@ services:
       MARIADB_DATABASE: demo
     volumes:
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./walmart-products.csv:/walmart-products.csv
       - ./mariadb-data:/var/lib/mysql
     ports:
       - "3306:3306"
@@ -14,7 +15,7 @@ services:
   local-ai:
       image: localai/localai:master-ffmpeg-core
       container_name: local-ai
-      command: bert-embeddings phi-2-chat
+      command: bert-embeddings phi-4
       ports:
         - "8080:8080"
       volumes:
