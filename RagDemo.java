@@ -54,7 +54,7 @@ public class RagDemo {
 						" - Price: €", final_price,
 						" - Rating: ", rating,
 						"). ", description, "."
-					) AS product
+					) AS product_summary
 					FROM products
 					WHERE embedding IS NOT NULL
 					ORDER BY VEC_DISTANCE_COSINE(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
@@ -64,7 +64,7 @@ public class RagDemo {
 					.executeAndFetchTable();
 
 			return table.rows().stream()
-					.map(row -> row.getString("product"))
+					.map(row -> row.getString("product_summary"))
 					.collect(Collectors.joining("\n\n"));
 		}
 	}

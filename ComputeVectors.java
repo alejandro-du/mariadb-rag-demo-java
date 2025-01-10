@@ -29,21 +29,21 @@ public class ComputeVectors {
 						" - Price: €", final_price,
 						" - Rating: ", rating,
 						"). ", description, "."
-					) AS product
+					) AS product_summary
 					FROM products
 					WHERE embedding IS NULL
 					""").executeAndFetchTableLazy();
 
 			for (Row row : table.rows()) {
 				var id = row.getString("id");
-				var product = row.getString("product");
+				var productSummary = row.getString("product_summary");
 
 				var requestBody = """
 						{
 							"model": "bert-embeddings",
 							"input": %s
 						}
-						""".formatted(new ObjectMapper().writeValueAsString(product));
+						""".formatted(new ObjectMapper().writeValueAsString(productSummary));
 
 				var response = Unirest.post("http://localhost:8080/v1/embeddings")
 						.header("Content-Type", "application/json")
