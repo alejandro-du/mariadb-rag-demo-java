@@ -15,7 +15,7 @@ services:
   local-ai:
       image: localai/localai:master-ffmpeg-core
       container_name: local-ai
-      command: bert-embeddings phi-4
+      command: bert-embeddings phi-2-chat
       ports:
         - "8080:8080"
       volumes:
