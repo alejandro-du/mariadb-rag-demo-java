@@ -26,8 +26,6 @@ public class RagDemo {
 
 		System.out.println("Generating response...");
 		var prompt = buildPrompt(input, context);
-		System.out.println(prompt);
-		//if(true) return;
 		var response = getResponse(prompt);
 		System.out.println(response);
 	}
@@ -53,14 +51,14 @@ public class RagDemo {
 						ROW_NUMBER() OVER (), ". ",
 						product_name, " (",
 						"Category: ", category_name, ", ", root_category_name,
-						" - Price: €", initial_price,
+						" - Price: €", final_price,
 						" - Rating: ", rating,
-						")."
+						"). ", description, "."
 					) AS product
 					FROM products
 					WHERE embedding IS NOT NULL
 					ORDER BY VEC_DISTANCE_COSINE(embedding, VEC_FromText(JSON_EXTRACT(:response, '$.data[0].embedding')))
-					LIMIT 5
+					LIMIT 10
 					""")
 					.addParameter("response", response)
 					.executeAndFetchTable();
