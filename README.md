@@ -18,65 +18,7 @@ Start the LocalAI and MariaDB services (see the **docker-compose.yml** file):
 docker compose up -d
 ```
 
-Download the dataset:
-https://www.kaggle.com/datasets/asaniczka/amazon-canada-products-2023-2-1m-products
-
-Move to the directory where you downloaded the dataset and create a _slice_ of it. For example 50k products:
-
-```shell
-head -n 50001 ~/Downloads/amz_ca_total_products_data_processed.csv > ~/Downloads/slice.csv
-```
-
-Copy the file to the MariaDB Docker container:
-
-```shell
-docker cp ~/Downloads/slice.csv mariadb:/slice.csv
-```
-
-Connect to the MariaDB server:
-
-```shell
-docker exec -it mariadb mariadb -u root -p'password' demo
-```
-
-Load the data from the CSV file into the MariaDB database:
-
-```sql
-LOAD DATA LOCAL INFILE '/slice.csv'
-INTO TABLE products
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES
-(
-    asin,
-    title,
-    img_url,
-    product_url,
-    stars,
-    reviews,
-    price,
-    list_price,
-    category_name,
-    is_best_seller,
-    bought_in_last_month
-);
-```
-
-Since the dataset contains repeated products, remove duplicates as follows:
-
-```sql
-DELETE p1
-FROM products p1
-JOIN products p2 ON p1.title = p2.title
-WHERE p1.id > p2.id;
-```
-
-Exit the MariaDB client:
-
-```shell
-exit
-```
+This also creates the database schema and loads a [data set with around 1000 Walmart products](https://github.com/luminati-io/Walmart-dataset-samples/blob/main/walmart-products.csv).
 
 Calculate the vector embeddings:
 
@@ -84,7 +26,7 @@ Calculate the vector embeddings:
 ./UpdateVectors.java
 ```
 
-Be patient. This might take a lot of time depending on your hardware and the size of the slice that you took.
+Be patient. This might take some time depending on your hardware.
 
 ## Run the demo
 
