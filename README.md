@@ -3,8 +3,7 @@
 This demo shows how to build a Retrieval-Augmented Generation (RAG) application
 using [MariaDB](https://mariadb.com/), [LocalAI](https://localai.io/), and [Java](https://en.wikipedia.org/wiki/Java_(programming_language)).
 
-**Note:** This demo uses an _RC version_ of MariaDB, which includes SQL syntax that
-might change in the next GA (stable) version.
+**Note:** This demo uses an _RC version_ of MariaDB, which includes SQL syntax that might change in the next GA (stable) version.
 
 ## Prerequisites
 
@@ -20,23 +19,27 @@ docker compose up -d
 
 This also creates the database schema and loads a [data set with around 1000 Walmart products](https://github.com/luminati-io/Walmart-dataset-samples/blob/main/walmart-products.csv).
 
-Calculate the vector embeddings:
+Wait until the AI models have been downloaded successfully:
 
 ```shell
-./UpdateVectors.java
+docker logs -f local-ai
+```
+
+Wait until you see the message _LocalAI API is listening!_ in the log.
+
+## Calculate the vector embeddings
+
+To calculate the vector embeddings for all the products in the database, run:
+
+```shell
+./ComputeVectors.java
 ```
 
 Be patient. This might take some time depending on your hardware.
 
 ## Run the demo
 
-Before you run the demo, double-check that the models have been downloaded successfully:
-
-```shell
-docker logs -f local-ai
-```
-
-Start the demo:
+To run the demo, execute the following:
 
 ```shell
 ./RagDemo.java
