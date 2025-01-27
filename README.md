@@ -1,7 +1,7 @@
 # Demo: RAG with MariaDB (Java)
 
 This demo shows how to build a Retrieval-Augmented Generation (RAG) application
-using [MariaDB](https://mariadb.com/), [LocalAI](https://localai.io/), and [Java](https://en.wikipedia.org/wiki/Java_(programming_language)).
+using [MariaDB](https://mariadb.com/), [LocalAI](https://localai.io/), and [Java](https://en.wikipedia.org/wiki/Java_(programming_language))  (with no AI frameworks for learning purposes).
 
 **Note:** This demo uses an _RC version_ of MariaDB, which includes SQL syntax that might change in the next GA (stable) version.
 
@@ -37,10 +37,10 @@ To calculate the vector embeddings for all the products in the database, run:
 
 Be patient. This might take some time depending on your hardware.
 
-## Run the demo
+## Run the chat demo
 
-To run the demo, execute the following:
+To run the chat demo, execute the following:
 
 ```shell
-./RagDemo.java
+./ChatDemo.java
 ```

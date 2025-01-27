@@ -12,7 +12,7 @@ import kong.unirest.Unirest;
 import org.sql2o.*;
 import java.util.stream.Collectors;
 
-public class RagDemo {
+public class ChatDemo {
 
 	static {
 		Unirest.config().socketTimeout(10 * 60 * 1000);
