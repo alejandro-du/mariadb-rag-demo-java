@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS products (
     discount DECIMAL(5, 2),
     ingredients_full TEXT,
 	categories TEXT,
-	embedding VECTOR(2048)
+	embedding VECTOR(3072)
 ) ENGINE=InnoDB;
 
 LOAD DATA LOCAL INFILE '/walmart-products.csv'

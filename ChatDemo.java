@@ -12,7 +12,13 @@ import kong.unirest.Unirest;
 import org.sql2o.*;
 import java.util.stream.Collectors;
 
-public class RagDemo {
+public class ChatDemo {
+
+	private static String API_EMBEDDINGS_URL = "https://api.openai.com/v1/embeddings";
+	private static String API_EMBEDDINGS_MODEL = "text-embedding-3-large";
+	private static String API_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
+	private static String API_CHAT_MODEL = "gpt-4o-mini";
+	private static String API_KEY = System.getenv("OPENAI_API_KEY");
 
 	static {
 		Unirest.config().socketTimeout(10 * 60 * 1000);
@@ -33,14 +39,15 @@ public class RagDemo {
 	private static String getContext(String input) throws JsonProcessingException {
 		var requestBody = """
 				{
-					"model": "bert-embeddings",
+					"model": %s,
 					"input": %s
 				}
-				""".formatted(new ObjectMapper().writeValueAsString(input));
+				""".formatted(new ObjectMapper().writeValueAsString(API_EMBEDDINGS_MODEL), new ObjectMapper().writeValueAsString(input));
 
-		var response = Unirest.post("http://127.0.0.1:8080/v1/embeddings")
+		var response = Unirest.post(API_EMBEDDINGS_URL)
 				.header("Content-Type", "application/json")
 				.body(requestBody)
+				.header("Authorization", "Bearer " + API_KEY)
 				.asString().getBody();
 
 		try (var connection = new Sql2o(
@@ -53,7 +60,7 @@ public class RagDemo {
 						"Category: ", category_name, ", ", root_category_name,
 						" - Price: €", final_price,
 						" - Rating: ", rating,
-						"). ", description, "."
+						"). ", description
 					) AS product_summary
 					FROM products
 					WHERE embedding IS NOT NULL
@@ -83,23 +90,24 @@ public class RagDemo {
 	}
 
 	private static String getResponse(String prompt) throws JsonProcessingException {
+		var mapper = new ObjectMapper();
 		var requestBody = """
 				{
-					"model": "phi-2-chat",
+					"model": %s,
 					"messages": [
 						{"role": "user", "content": %s}
 					],
-					"temperature": 0.3,
+					"temperature": 0.1,
 					"max_tokens": 150
 				}
-				""".formatted(new ObjectMapper().writeValueAsString(prompt));
+				""".formatted(mapper.writeValueAsString(API_CHAT_MODEL), mapper.writeValueAsString(prompt));
 
-		var response = Unirest.post("http://127.0.0.1:8080/v1/chat/completions")
+		var response = Unirest.post(API_CHAT_COMPLETIONS_URL)
 				.header("Content-Type", "application/json")
+				.header("Authorization", "Bearer " + API_KEY)
 				.body(requestBody)
 				.asString().getBody();
 
-		var mapper = new ObjectMapper();
 		var jsonNode = mapper.readTree(response);
 		return jsonNode.path("choices").get(0).path("message").path("content").asText();
 	}

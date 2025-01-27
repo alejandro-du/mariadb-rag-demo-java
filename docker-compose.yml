@@ -11,12 +11,3 @@ services:
       - ./mariadb-data:/var/lib/mysql
     ports:
       - "3306:3306"
-
-  local-ai:
-      image: localai/localai:master-ffmpeg-core
-      container_name: local-ai
-      command: bert-embeddings phi-2-chat
-      ports:
-        - "8080:8080"
-      volumes:
-        - ./models:/build/models:cached

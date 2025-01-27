@@ -14,6 +14,10 @@ import org.sql2o.data.*;
 
 public class ComputeVectors {
 
+	private static String API_EMBEDDINGS_URL = "https://api.openai.com/v1/embeddings";
+	private static String API_EMBEDDINGS_MODEL = "text-embedding-3-large";
+	private static String API_KEY = System.getenv("OPENAI_API_KEY");
+
 	static {
 		Unirest.config().socketTimeout(2 * 60 * 1000);
 	}
@@ -40,14 +44,15 @@ public class ComputeVectors {
 
 				var requestBody = """
 						{
-							"model": "bert-embeddings",
+							"model": %s,
 							"input": %s
 						}
-						""".formatted(new ObjectMapper().writeValueAsString(productSummary));
+						""".formatted(new ObjectMapper().writeValueAsString(API_EMBEDDINGS_MODEL), new ObjectMapper().writeValueAsString(productSummary));
 
-				var response = Unirest.post("http://localhost:8080/v1/embeddings")
+				var response = Unirest.post(API_EMBEDDINGS_URL)
 						.header("Content-Type", "application/json")
 						.body(requestBody)
+						.header("Authorization", "Bearer " + API_KEY)
 						.asString().getBody();
 
 				connection.createQuery("""
