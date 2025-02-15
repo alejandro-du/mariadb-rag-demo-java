@@ -1,6 +1,6 @@
 services:
   mariadb:
-    image: mariadb:11.7-rc
+    image: mariadb:11.7
     container_name: mariadb
     environment:
       MARIADB_ROOT_PASSWORD: password
