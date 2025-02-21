@@ -15,7 +15,7 @@ import org.sql2o.data.*;
 public class ComputeVectors {
 
 	private static String API_EMBEDDINGS_URL = "https://api.openai.com/v1/embeddings";
-	private static String API_EMBEDDINGS_MODEL = "text-embedding-3-large";
+	private static String API_EMBEDDINGS_MODEL = "text-embedding-3-small";
 	private static String API_KEY = System.getenv("OPENAI_API_KEY");
 
 	static {
