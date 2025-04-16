@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 
 public class ChatDemo {
 
-	private static String API_EMBEDDINGS_URL = "https://api.openai.com/v1/embeddings";
-	private static String API_EMBEDDINGS_MODEL = "text-embedding-3-large";
-	private static String API_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
-	private static String API_CHAT_MODEL = "gpt-4o-mini";
-	private static String API_KEY = System.getenv("OPENAI_API_KEY");
+	private static final String API_EMBEDDINGS_URL = "https://api.openai.com/v1/embeddings";
+	private static final String API_EMBEDDINGS_MODEL = "text-embedding-3-large";
+	private static final String API_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
+	private static final String API_CHAT_MODEL = "gpt-4o-mini";
+	private static final String API_KEY = System.getenv("OPENAI_API_KEY");
 
 	static {
 		Unirest.config().socketTimeout(10 * 60 * 1000);
